@@ -3,10 +3,24 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    [SerializeField] private GameObject mainUI;
-    [SerializeField] private GameObject aboutUI;
-    [SerializeField] private GameObject creditUI;
-    private int currentUI = 0;
+    [SerializeField] private GameObject mainUI = null;
+    [SerializeField] private GameObject aboutUI = null;
+    [SerializeField] private GameObject creditUI = null;
+    [SerializeField] private GameObject quitUI = null;
+    [SerializeField] private new AudioSource audio = null;
+    private int currentUI;
+
+    private void Start()
+    {
+        mainUI.SetActive(true);
+        aboutUI.SetActive(false);
+        creditUI.SetActive(false);
+        quitUI.SetActive(false);
+        currentUI = 0;
+        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1);
+        QualitySettings.vSyncCount = PlayerPrefs.GetInt("isVsyncMode", 0);
+        Application.targetFrameRate = PlayerPrefs.GetInt("currentFps", 60);
+    }
 
     private void Update()
     {
@@ -14,15 +28,19 @@ public class MainMenuController : MonoBehaviour
         {
             if(currentUI == 0)
             {
-                QuitGame();
+                ShowQuit();
             }
             else if(currentUI == 1)
             {
                 QuitAbout();
             }
-            else
+            else if(currentUI == 2)
             {
                 QuitCredit();
+            }
+            else if(currentUI == 3)
+            {
+                HideQuit();
             }
         }
     }
@@ -62,6 +80,18 @@ public class MainMenuController : MonoBehaviour
     {
         mainUI.SetActive(true);
         creditUI.SetActive(false);
+        currentUI = 0;
+    }
+
+    public void ShowQuit()
+    {
+        quitUI.SetActive(true);
+        currentUI = 3;
+    }
+
+    public void HideQuit()
+    {
+        quitUI.SetActive(false);
         currentUI = 0;
     }
 

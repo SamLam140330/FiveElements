@@ -3,19 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
-    public static int currentStage;
+    [SerializeField] private new AudioSource audio = null;
+    public static string currentStage;
 
     private void Start()
     {
         Time.timeScale = 1f;
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            CheckStage();
-        }
+        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1);
     }
 
    public void Yes()
@@ -30,21 +24,17 @@ public class SceneController : MonoBehaviour
 
     public void CheckStage()
     {
-        if(currentStage == 1)
+        if(currentStage == "Stage1")
         {
             SceneManager.LoadScene("Stage1");
         }
-        else if(currentStage == 2)
+        else if(currentStage == "Stage2")
         {
             SceneManager.LoadScene("Stage2");
         }
-        else if(currentStage == 3)
+        else if(currentStage == "Stage3")
         {
             SceneManager.LoadScene("Stage3");
-        }
-        else
-        {
-            SceneManager.LoadScene("MainMenu");
         }
     }
 

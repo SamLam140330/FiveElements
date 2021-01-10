@@ -4,10 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Stone
   - Box
-  - Wall
-  - Point
+  - Gold
+  - Wood
+  - Dust
+  - Water
+  - Fire
+  - MovingStone
   layers:
   - Default
   - TransparentFX
@@ -42,7 +45,7 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Bg
+  - name: Background
     uniqueID: 36745191
     locked: 0
   - name: Default

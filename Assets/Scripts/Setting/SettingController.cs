@@ -1,37 +1,61 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SettingController : MonoBehaviour
 {
-    [SerializeField] private Dropdown resolutionDropdown;
+    [SerializeField] private Dropdown resolutionDropdown = null;
+    [SerializeField] private Slider audioSlider = null;
+    [SerializeField] private Slider sfxSlider = null;
+    [SerializeField] private Dropdown quality = null;
+    [SerializeField] private Dropdown fps = null;
+    [SerializeField] private Dropdown resolution = null;
+    [SerializeField] private Toggle isFullScreen = null;
+    [SerializeField] private Toggle isVsync = null;
+    [SerializeField] private new AudioSource audio = null;
+    [SerializeField] private AudioSource sfx = null;
     private Resolution[] resolutions;
-    [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private Slider audioSlider;
-    [SerializeField] private Dropdown quality;
+    private bool isOn = true;
+    private bool vsyncOn = false;
 
     private void Start()
     {
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
         List<string> options = new List<string>();
-        int currentResolutionsIndex = 0;
         for(int i = 0; i < resolutions.Length; i++)
         {
             string option = resolutions[i].width + " x " + resolutions[i].height;
             options.Add(option);
-            if(resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolutionsIndex = i;
-            }
         }
         resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionsIndex;
         resolutionDropdown.RefreshShownValue();
         quality.value = PlayerPrefs.GetInt("qualityLevel", 5);
-        audioSlider.value = PlayerPrefs.GetFloat("musicVolume", 0);
+        fps.value = PlayerPrefs.GetInt("fpsLevel", 1);
+        resolution.value = PlayerPrefs.GetInt("resolutionLevel", 1);
+        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1);
+        sfx.volume = PlayerPrefs.GetFloat("sfxVolume", 1);
+        audioSlider.value = PlayerPrefs.GetFloat("audioVolume", 1f);
+        sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume", 1f);
+        if(PlayerPrefs.GetInt("isFullScreenMode") == 1)
+        {
+            isOn = true;
+        }
+        else
+        {
+            isOn = false;
+        }
+        isFullScreen.isOn = isOn;
+        if(PlayerPrefs.GetInt("isVsyncMode") == 1)
+        {
+            vsyncOn = true;
+        }
+        else
+        {
+            vsyncOn = false;
+        }
+        isVsync.isOn = vsyncOn;
     }
 
     private void Update()
@@ -40,15 +64,6 @@ public class SettingController : MonoBehaviour
         {
             QuitSetting();
         }
-    }
-
-    private void OnDisable()
-    {
-        PlayerPrefs.SetInt("qualityLevel", quality.value);
-        float musicVolume = 0;
-        audioMixer.GetFloat("musicVolume", out musicVolume);
-        PlayerPrefs.SetFloat("musicVolume", musicVolume);
-        PlayerPrefs.Save();
     }
 
     public void SetResolution(int resolutionsIndex)
@@ -60,6 +75,14 @@ public class SettingController : MonoBehaviour
     public void SetFullscreen(bool fullscreenMode)
     {
         Screen.fullScreen = fullscreenMode;
+        if(fullscreenMode == true)
+        {
+            PlayerPrefs.SetInt("isFullScreenMode", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("isFullScreenMode", 0);
+        }
     }
 
     public void SetQuality(int qualityIndex)
@@ -67,13 +90,74 @@ public class SettingController : MonoBehaviour
         QualitySettings.SetQualityLevel(qualityIndex);
     }
 
+    public void SetFps(int fpsIndex)
+    {
+        if(fpsIndex == 0)
+        {
+            Application.targetFrameRate = 30;
+            PlayerPrefs.SetInt("currentFps", 30);
+        }
+        else if(fpsIndex == 1)
+        {
+            Application.targetFrameRate = 60;
+            PlayerPrefs.SetInt("currentFps", 60);
+        }
+        else if(fpsIndex == 2)
+        {
+            Application.targetFrameRate = 90;
+            PlayerPrefs.SetInt("currentFps", 90);
+        }
+        else if(fpsIndex == 3)
+        {
+            Application.targetFrameRate = 144;
+            PlayerPrefs.SetInt("currentFps", 144);
+        }
+        else if(fpsIndex == 4)
+        {
+            Application.targetFrameRate = 165;
+            PlayerPrefs.SetInt("currentFps", 165);
+        }
+        else if(fpsIndex == 5)
+        {
+            Application.targetFrameRate = 240;
+            PlayerPrefs.SetInt("currentFps", 240);
+        }
+    }
+
+    public void SetVsync(bool vsyncMode)
+    {
+        int vysncNum;
+        if(vsyncMode == true)
+        {
+            vysncNum = 1;
+            fps.interactable = false;
+        }
+        else
+        {
+            vysncNum = 0;
+            fps.interactable = true;
+        }
+        QualitySettings.vSyncCount = vysncNum;
+        PlayerPrefs.SetInt("isVsyncMode", vysncNum);
+    }
+
     public void SetVolume(float volume)
     {
-        audioMixer.SetFloat("musicVolume", volume);
+        audio.volume = volume;
+    }
+
+    public void SetSfxVolume(float volume)
+    {
+        sfx.volume = volume;
     }
 
     public void QuitSetting()
     {
+        PlayerPrefs.SetInt("qualityLevel", quality.value);
+        PlayerPrefs.SetInt("fpsLevel", fps.value);
+        PlayerPrefs.SetInt("resolutionLevel", resolution.value);
+        PlayerPrefs.SetFloat("audioVolume", audio.volume);
+        PlayerPrefs.SetFloat("sfxVolume", sfx.volume);
         SceneManager.LoadScene("MainMenu");
     }
 }

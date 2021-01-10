@@ -5,31 +5,47 @@ using UnityEngine.UI;
 
 public class Stage1Controller : MonoBehaviour
 {
-    [SerializeField] private GameObject gameUI;
-    [SerializeField] private GameObject pauseUI;
-    [SerializeField] private GameObject tipsUI;
-    [SerializeField] private AudioSource bgm;
-    [SerializeField] private Text timeTxt;
-    [SerializeField] private GameObject[] boxImage;
-    [SerializeField] private GameObject[] emptyImage;
-    [SerializeField] private GameObject WinTxt;
-    public int completeBox;
+    [SerializeField] private GameObject gameUI = null;
+    [SerializeField] private GameObject pauseUI = null;
+    [SerializeField] private GameObject tipsUI = null;
+    [SerializeField] private Text timeTxt = null;
+    [SerializeField] private GameObject WinTxt = null;
+    [SerializeField] private GameObject pauseBtn = null;
+    [SerializeField] private new AudioSource audio = null;
+    public AudioSource sfx1 = null;
+    public AudioSource sfx2 = null;
+    [SerializeField] private GameObject[] boxImage = null;
+    [SerializeField] private GameObject[] emptyImage = null;
+    [HideInInspector] public int completeBox;
+    private Player player;
     private bool isUI;
     private bool gameIsPause;
     private float timeLeft;
 
     private void Start()
     {
+        player = FindObjectOfType<Player>();
+        SceneController.currentStage = "Stage1";
         Time.timeScale = 0f;
         completeBox = 0;
-        SceneController.currentStage = 1;
-        timeLeft = 180;
+        timeLeft = 180f;
         gameIsPause = false;
         isUI = true;
         tipsUI.SetActive(true);
+        gameUI.SetActive(true);
+        pauseUI.SetActive(false);
+        sfx1.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
+        sfx2.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
+        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1f);
     }
 
     private void Update()
+    {
+        CheckESC();
+        TimeCount();
+    }
+
+    private void CheckESC()
     {
         if(completeBox < 5)
         {
@@ -48,8 +64,27 @@ public class Stage1Controller : MonoBehaviour
                 }
             }
         }
-        TimeCount();
-        TimeEnd();
+    }
+
+    private void TimeCount()
+    {
+        if(completeBox < 5)
+        {
+            timeLeft -= Time.deltaTime;
+            timeTxt.text = "剩餘時間: " + (int)timeLeft + "s";
+            if(timeLeft <= 90f)
+            {
+                timeTxt.color = Color.yellow;
+            }
+            if(timeLeft <= 45f)
+            {
+                timeTxt.color = Color.red;
+            }
+            if(timeLeft <= 0f)
+            {
+                SceneManager.LoadScene("Ending2");
+            }
+        }
     }
 
     public void GotIt()
@@ -85,7 +120,10 @@ public class Stage1Controller : MonoBehaviour
         {
             emptyImage[4].SetActive(false);
             boxImage[4].SetActive(true);
+            player.playerAnimator.SetBool("IsRunning", false);
+            sfx2.Stop();
             WinTxt.SetActive(true);
+            pauseBtn.SetActive(false);
             StartCoroutine(NextLevel());
         }
     }
@@ -99,7 +137,8 @@ public class Stage1Controller : MonoBehaviour
     public void Pause()
     {
         gameIsPause = true;
-        bgm.Pause();
+        audio.Pause();
+        sfx2.Stop();
         gameUI.SetActive(false);
         pauseUI.SetActive(true);
         Time.timeScale = 0f;
@@ -108,7 +147,7 @@ public class Stage1Controller : MonoBehaviour
     public void Resume()
     {
         gameIsPause = false;
-        bgm.Play();
+        audio.Play();
         gameUI.SetActive(true);
         pauseUI.SetActive(false);
         Time.timeScale = 1f;
@@ -127,30 +166,5 @@ public class Stage1Controller : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    private void TimeCount()
-    {
-        if(completeBox < 5)
-        {
-            timeLeft -= Time.deltaTime;
-            timeTxt.text = "Time Remain: " + timeLeft + "s";
-            if(timeLeft <= 60)
-            {
-                timeTxt.color = Color.yellow;
-            }
-            if(timeLeft <= 30)
-            {
-                timeTxt.color = Color.red;
-            }
-        }
-    }
-
-    private void TimeEnd()
-    {
-        if(timeLeft <= 0)
-        {
-            SceneManager.LoadScene("Ending2");
-        }
     }
 }

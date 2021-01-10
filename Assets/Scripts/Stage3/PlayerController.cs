@@ -2,12 +2,13 @@
 
 public class PlayerController : MonoBehaviour
 {
-    private float moveSpeed = 2f;
+    private float moveSpeed = 1.5f;
     private Rigidbody2D rb;
     private Vector2 movement;
+    private Stage3Controller stage3Controller;
+    public Animator playerAnimator;
     public static int currentUI;
     public static int currentQuestion;
-    private Stage3Controller stage3Controller;
 
     private void Start()
     {
@@ -21,16 +22,36 @@ public class PlayerController : MonoBehaviour
     {
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
+        if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
+        {
+            stage3Controller.sfx3.Play();
+        }
+        else if (!Input.GetButton("Horizontal") && !Input.GetButton("Vertical") && stage3Controller.sfx3.isPlaying)
+        {
+            stage3Controller.sfx3.Stop();
+        }
     }
 
     private void FixedUpdate()
     {
-        if(currentUI == 0 && currentQuestion == 0)
-        {//Win Condtion
+        if(currentUI == 0 && currentQuestion == 0 && stage3Controller.checkWon == false)
+        {
             rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-            if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            if(movement.x < 0.0f)
             {
-                rb.MovePosition(rb.position + movement * (moveSpeed * 2) * Time.fixedDeltaTime);
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else if(movement.x > 0.0f)
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            if(movement.x != 0 || movement.y != 0)
+            {
+                playerAnimator.SetBool("IsRunning", true);
+            }
+            else if(movement.x == 0 && movement.y == 0)
+            {
+                playerAnimator.SetBool("IsRunning", false);
             }
         }
     }
@@ -40,82 +61,91 @@ public class PlayerController : MonoBehaviour
         if(other.gameObject.name == "FireDoor")
         {
             currentUI = 1;
+            stage3Controller.DisplayUI();
         }
         else if(other.gameObject.name == "WoodDoor")
         {
             currentUI = 2;
+            stage3Controller.DisplayUI();
         }
-        else if (other.gameObject.name == "WaterDoor")
+        else if(other.gameObject.name == "WaterDoor")
         {
             currentUI = 3;
+            stage3Controller.DisplayUI();
         }
-        else if (other.gameObject.name == "GoldDoor")
+        else if(other.gameObject.name == "GoldDoor")
         {
             currentUI = 4;
+            stage3Controller.DisplayUI();
         }
-        else if (other.gameObject.name == "DustDoor")
+        else if(other.gameObject.name == "DustDoor")
         {
             currentUI = 5;
+            stage3Controller.DisplayUI();
         }
-        if (other.gameObject.name == "NPC")
+        if(other.gameObject.name == "NPC")
         {
             currentQuestion = 1;
+            stage3Controller.ShowQuestion();
         }
-        else if (other.gameObject.name == "RealTree")
+        else if(other.gameObject.name == "RealTree")
         {
             currentQuestion = 2;
+            stage3Controller.ShowQuestion();
         }
-        else if (other.gameObject.name == "CoolDoor")
+        else if(other.gameObject.name == "CoolDoor")
         {
             currentQuestion = 3;
+            stage3Controller.ShowQuestion();
         }
-        else if (other.gameObject.name == "Box")
+        else if(other.gameObject.name == "Box")
         {
             currentQuestion = 4;
+            stage3Controller.ShowQuestion();
         }
-        else if (other.gameObject.name == "RealStone")
+        else if(other.gameObject.name == "RealStone")
         {
             currentQuestion = 5;
+            stage3Controller.ShowQuestion();
         }
-        if (other.gameObject.name == "Fire")
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.CompareTag("Fire"))
         {
             Destroy(other.gameObject);
-            stage3Controller.finishedQuestion += 1;
-            stage3Controller.finishedQuestionImage = 1;
+            stage3Controller.currentElement = 4;
+            stage3Controller.finishedQuestion = "Fire";
             stage3Controller.GetElement();
-            stage3Controller.CheckWin();
         }
-        else if (other.gameObject.name == "Wood")
+        if(other.gameObject.CompareTag("Wood"))
         {
             Destroy(other.gameObject);
-            stage3Controller.finishedQuestion += 1;
-            stage3Controller.finishedQuestionImage = 2;
+            stage3Controller.currentElement = 1;
+            stage3Controller.finishedQuestion = "Wood";
             stage3Controller.GetElement();
-            stage3Controller.CheckWin();
         }
-        else if (other.gameObject.name == "Water")
+        if(other.gameObject.CompareTag("Water"))
         {
             Destroy(other.gameObject);
-            stage3Controller.finishedQuestion += 1;
-            stage3Controller.finishedQuestionImage = 3;
+            stage3Controller.currentElement = 3;
+            stage3Controller.finishedQuestion = "Water";
             stage3Controller.GetElement();
-            stage3Controller.CheckWin();
         }
-        else if (other.gameObject.name == "Gold")
+        if(other.gameObject.CompareTag("Gold"))
         {
             Destroy(other.gameObject);
-            stage3Controller.finishedQuestion += 1;
-            stage3Controller.finishedQuestionImage = 4;
+            stage3Controller.currentElement = 0;
+            stage3Controller.finishedQuestion = "Gold";
             stage3Controller.GetElement();
-            stage3Controller.CheckWin();
         }
-        else if (other.gameObject.name == "Dust")
+        if(other.gameObject.CompareTag("Dust"))
         {
             Destroy(other.gameObject);
-            stage3Controller.finishedQuestion += 1;
-            stage3Controller.finishedQuestionImage = 5;
+            stage3Controller.currentElement = 2;
+            stage3Controller.finishedQuestion = "Dust";
             stage3Controller.GetElement();
-            stage3Controller.CheckWin();
         }
     }
 }
