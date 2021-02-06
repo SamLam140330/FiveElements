@@ -1,2 +1,2 @@
-**/shader/* linguist-vendored=false
-**/cginc/* linguist-vendored=false
+**/shaders/* linguist-vendored=true
+**/cginc/* linguist-vendored=true
