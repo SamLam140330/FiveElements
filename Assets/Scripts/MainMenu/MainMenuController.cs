@@ -24,21 +24,21 @@ public class MainMenuController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(currentUI == 0)
+            if (currentUI == 0)
             {
                 ShowQuit();
             }
-            else if(currentUI == 1)
+            else if (currentUI == 1)
             {
                 QuitAbout();
             }
-            else if(currentUI == 2)
+            else if (currentUI == 2)
             {
                 QuitCredit();
             }
-            else if(currentUI == 3)
+            else if (currentUI == 3)
             {
                 HideQuit();
             }
@@ -47,7 +47,7 @@ public class MainMenuController : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Openning");
+        SceneManager.LoadScene("Opening");
     }
 
     public void ShowAbout()
