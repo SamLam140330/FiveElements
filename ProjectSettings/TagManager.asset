@@ -11,6 +11,9 @@ TagManager:
   - Water
   - Fire
   - MovingStone
+  - Elements
+  - Walls
+  - Doors
   layers:
   - Default
   - TransparentFX
@@ -47,6 +50,18 @@ TagManager:
   m_SortingLayers:
   - name: Background
     uniqueID: 36745191
+    locked: 0
+  - name: Stone
+    uniqueID: 1793402743
+    locked: 0
+  - name: EndPoint
+    uniqueID: 3077096255
+    locked: 0
+  - name: Element
+    uniqueID: 3954622703
+    locked: 0
+  - name: Player
+    uniqueID: 3807232553
     locked: 0
   - name: Default
     uniqueID: 0

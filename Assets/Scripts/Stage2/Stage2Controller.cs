@@ -1,189 +1,192 @@
 ﻿using System.Collections;
+using FiveElement.Opening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Stage2Controller : MonoBehaviour
+namespace FiveElement.Stage2
 {
-    [SerializeField] private GameObject gameUI = null;
-    [SerializeField] private GameObject pauseUI = null;
-    [SerializeField] private GameObject tipsUI = null;
-    [SerializeField] private GameObject MovingWall = null;
-    [SerializeField] private Transform startPoint = null;
-    [SerializeField] private Transform endPoint = null;
-    [SerializeField] private Text timeTxt = null;
-    [SerializeField] private GameObject winTxt = null;
-    [SerializeField] private GameObject pauseBtn = null;
-    [SerializeField] private new AudioSource audio = null;
-    public AudioSource sfx1 = null;
-    public AudioSource sfx2 = null;
-    [SerializeField] private GameObject[] ball = null;
-    [HideInInspector] public string gotElement;
-    [HideInInspector] public bool isWon;
-    private PlayerMove playerMove;
-    private bool isUI;
-    private bool gameIsPause;
-    private float timeLeft;
-    private float moveSpeed;
-    private Vector3 currentTarget;
-
-    private void Start()
+    public class Stage2Controller : MonoBehaviour
     {
-        playerMove = FindObjectOfType<PlayerMove>();
-        SceneController.currentStage = "Stage2";
-        Time.timeScale = 0f;
-        timeLeft = 60f;
-        gameIsPause = false;
-        isUI = true;
-        isWon = false;
-        gameUI.SetActive(true);
-        pauseUI.SetActive(false);
-        tipsUI.SetActive(true);
-        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1f);
-        sfx1.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
-        sfx2.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
-        RandomSpawn();
-        currentTarget = endPoint.position;
-        moveSpeed = 7f;
-    }
+        [SerializeField] private GameObject gameUI = null;
+        [SerializeField] private GameObject pauseUI = null;
+        [SerializeField] private GameObject tipsUI = null;
+        [SerializeField] private GameObject MovingWall = null;
+        [SerializeField] private Transform startPoint = null;
+        [SerializeField] private Transform endPoint = null;
+        [SerializeField] private Text timeTxt = null;
+        [SerializeField] private GameObject winTxt = null;
+        [SerializeField] private GameObject pauseBtn = null;
+        [SerializeField] private new AudioSource audio = null;
+        public AudioSource sfx1 = null;
+        public AudioSource sfx2 = null;
+        [SerializeField] private GameObject[] ball = null;
+        [HideInInspector] public string gotElement;
+        [HideInInspector] public bool isWon;
+        private PlayerMove playerMove;
+        private bool isUI;
+        private bool gameIsPause;
+        private float timeLeft;
+        private float moveSpeed;
+        private Vector3 currentTarget;
 
-    private void RandomSpawn()
-    {
-        for(int i = 0; i < ball.Length; i++)
+        private void Start()
         {
-            Instantiate(ball[i], new Vector2(Random.Range(-8f, 8f), Random.Range(1f, 4f)), Quaternion.identity);
+            playerMove = FindObjectOfType<PlayerMove>();
+            Time.timeScale = 0f;
+            timeLeft = 60f;
+            gameIsPause = false;
+            isUI = true;
+            isWon = false;
+            gameUI.SetActive(true);
+            pauseUI.SetActive(false);
+            tipsUI.SetActive(true);
+            audio.volume = PlayerPrefs.GetFloat("audioVolume", 1f);
+            sfx1.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
+            sfx2.volume = PlayerPrefs.GetFloat("sfxVolume", 1f);
+            RandomSpawn();
+            currentTarget = endPoint.position;
+            moveSpeed = 7f;
         }
-    }
 
-    private void Update()
-    {
-        CheckESC();
-        CheckMovingWall();
-        CheckTime();
-    }
-
-    private void CheckESC()
-    {
-        if(isWon == false)
+        private void RandomSpawn()
         {
-            if(Input.GetKeyDown(KeyCode.Escape))
+            for(int i = 0; i < ball.Length; i++)
             {
-                if(isUI == false)
+                Instantiate(ball[i], new Vector2(Random.Range(-8f, 8f), Random.Range(1f, 4f)), Quaternion.identity);
+            }
+        }
+
+        private void Update()
+        {
+            CheckESC();
+            CheckMovingWall();
+            CheckTime();
+        }
+
+        private void CheckESC()
+        {
+            if(isWon == false)
+            {
+                if(Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if(gameIsPause == false)
+                    if(isUI == false)
                     {
-                        Pause();
-                    }
-                    else
-                    {
-                        Resume();
+                        if(gameIsPause == false)
+                        {
+                            Pause();
+                        }
+                        else
+                        {
+                            Resume();
+                        }
                     }
                 }
             }
         }
-    }
     
-    private void CheckMovingWall()
-    {
-        if(isUI == false && gameIsPause == false && isWon == false)
+        private void CheckMovingWall()
         {
-            MovingWall.transform.position = Vector3.MoveTowards(MovingWall.transform.position, currentTarget, moveSpeed * Time.deltaTime);
-            if(MovingWall.transform.position == endPoint.position)
+            if(isUI == false && gameIsPause == false && isWon == false)
             {
-                currentTarget = startPoint.position;
-            }
-            if(MovingWall.transform.position == startPoint.position)
-            {
-                currentTarget = endPoint.position;
+                MovingWall.transform.position = Vector3.MoveTowards(MovingWall.transform.position, currentTarget, moveSpeed * Time.deltaTime);
+                if(MovingWall.transform.position == endPoint.position)
+                {
+                    currentTarget = startPoint.position;
+                }
+                if(MovingWall.transform.position == startPoint.position)
+                {
+                    currentTarget = endPoint.position;
+                }
             }
         }
-    }
 
-    private void CheckTime()
-    {
-        if(isWon == false)
+        private void CheckTime()
         {
-            timeLeft -= Time.deltaTime;
-            timeTxt.text = "剩餘時間: " + (int)timeLeft + "s";
-            if(timeLeft <= 30f)
+            if(isWon == false)
             {
-                timeTxt.color = Color.yellow;
+                timeLeft -= Time.deltaTime;
+                timeTxt.text = "剩餘時間: " + (int)timeLeft + "s";
+                if(timeLeft <= 30f)
+                {
+                    timeTxt.color = Color.yellow;
+                }
+                if(timeLeft <= 15f)
+                {
+                    timeTxt.color = Color.red;
+                }
+                if(timeLeft <= 0f)
+                {
+                    SceneManager.LoadScene("Ending2");
+                }
             }
-            if(timeLeft <= 15f)
+        }
+
+        public void CheckBall()
+        {
+            if(gotElement == "Gold Wood Dust Water Fire " || gotElement == "Wood Dust Water Fire Gold " || gotElement == "Dust Water Fire Gold Wood " || gotElement == "Water Fire Gold Wood Dust " || gotElement == "Fire Gold Wood Dust Water ")
             {
-                timeTxt.color = Color.red;
+                sfx2.Stop();
+                playerMove.playerAnimator.SetBool("IsRunning", false);
+
+
+
+                winTxt.SetActive(true);
+                pauseBtn.SetActive(false);
+                isWon = true;
+                StartCoroutine(NextLevel());
             }
-            if(timeLeft <= 0f)
+            else
             {
                 SceneManager.LoadScene("Ending2");
             }
         }
-    }
 
-    public void CheckBall()
-    {
-        if(gotElement == "Gold Wood Dust Water Fire " || gotElement == "Wood Dust Water Fire Gold " || gotElement == "Dust Water Fire Gold Wood " || gotElement == "Water Fire Gold Wood Dust " || gotElement == "Fire Gold Wood Dust Water ")
+        IEnumerator NextLevel()
         {
+            yield return new WaitForSeconds(5f);
+            SceneManager.LoadScene("Stage3");
+        }
+
+        public void GotIt()
+        {
+            isUI = false;
+            tipsUI.SetActive(false);
+            Time.timeScale = 1f;
+        }
+
+        public void Pause()
+        {
+            gameIsPause = true;
+            audio.Pause();
             sfx2.Stop();
-            playerMove.playerAnimator.SetBool("IsRunning", false);
-
-
-
-            winTxt.SetActive(true);
-            pauseBtn.SetActive(false);
-            isWon = true;
-            StartCoroutine(NextLevel());
+            gameUI.SetActive(false);
+            pauseUI.SetActive(true);
+            Time.timeScale = 0f;
         }
-        else
+
+        public void Resume()
         {
-            SceneManager.LoadScene("Ending2");
+            gameIsPause = false;
+            audio.Play();
+            gameUI.SetActive(true);
+            pauseUI.SetActive(false);
+            Time.timeScale = 1f;
         }
-    }
 
-    IEnumerator NextLevel()
-    {
-        yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("Stage3");
-    }
+        public void BackToMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
 
-    public void GotIt()
-    {
-        isUI = false;
-        tipsUI.SetActive(false);
-        Time.timeScale = 1f;
-    }
+        public void Restart()
+        {
+            SceneManager.LoadScene("Stage2");
+        }
 
-    public void Pause()
-    {
-        gameIsPause = true;
-        audio.Pause();
-        sfx2.Stop();
-        gameUI.SetActive(false);
-        pauseUI.SetActive(true);
-        Time.timeScale = 0f;
-    }
-
-    public void Resume()
-    {
-        gameIsPause = false;
-        audio.Play();
-        gameUI.SetActive(true);
-        pauseUI.SetActive(false);
-        Time.timeScale = 1f;
-    }
-
-    public void BackToMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene("Stage2");
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
     }
 }

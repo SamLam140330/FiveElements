@@ -1,50 +1,52 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneController : MonoBehaviour
+namespace FiveElement.Opening
 {
-    [SerializeField] private new AudioSource audio = null;
-    public static string currentStage;
-
-    private void Start()
+    public class SceneController : MonoBehaviour
     {
-        Time.timeScale = 1f;
-        audio.volume = PlayerPrefs.GetFloat("audioVolume", 1);
-    }
+        private int _currentStage;
 
-   public void Yes()
-    {
-        SceneManager.LoadScene("Stage1");
-    }
+        private void Start()
+        {
+            Time.timeScale = 1f;
+            _currentStage = PlayerPrefs.GetInt("Stage");
+        }
 
-    public void No()
-    {
-        SceneManager.LoadScene("Ending1");
-    }
-
-    public void CheckStage()
-    {
-        if(currentStage == "Stage1")
+        public void Yes()
         {
             SceneManager.LoadScene("Stage1");
         }
-        else if(currentStage == "Stage2")
-        {
-            SceneManager.LoadScene("Stage2");
-        }
-        else if(currentStage == "Stage3")
-        {
-            SceneManager.LoadScene("Stage3");
-        }
-    }
 
-    public void GiveUp()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
+        public void No()
+        {
+            SceneManager.LoadScene("Ending1");
+        }
 
-    public void Finish()
-    {
-        SceneManager.LoadScene("MainMenu");
+        public void OnRetryBtnClicked()
+        {
+            if (_currentStage == 1)
+            {
+                SceneManager.LoadScene("Stage1");
+            }
+            else if (_currentStage == 2)
+            {
+                SceneManager.LoadScene("Stage2");
+            }
+            else if (_currentStage == 3)
+            {
+                SceneManager.LoadScene("Stage3");
+            }
+        }
+
+        public void GiveUp()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+
+        public void Finish()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 }

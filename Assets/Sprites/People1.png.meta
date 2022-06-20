@@ -354,7 +354,7 @@ TextureImporter:
     maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -387,6 +387,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Android
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
@@ -2488,10 +2500,10 @@ TextureImporter:
       People1_20: 2076855426078898588
       People1_51: -4437450073134309405
       People1_39: -1472210016725077549
-      People1_45: -1575350167357775716
       People1_92: -382224727980922409
       People1_78: 2764115745854260463
       People1_24: -5738225713813051222
+      People1_45: -1575350167357775716
       People1_82: 8977413758627717251
       People1_66: 5620072173784287511
       People1_12: 3963439069235840976
