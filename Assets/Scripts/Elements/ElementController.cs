@@ -6,7 +6,7 @@ namespace FiveElement.Elements
     {
         private Rigidbody2D _rigidBody2D;
 
-        private void Start()
+        private void Awake()
         {
             _rigidBody2D = GetComponent<Rigidbody2D>();
         }

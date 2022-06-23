@@ -10,12 +10,12 @@ namespace FiveElement.Audio
 
         private void OnEnable()
         {
-            Stage1Manager.OnChangeAudioState += ChangeAudioState;
+            StageManager.OnChangeAudioState += ChangeAudioState;
         }
 
         private void OnDisable()
         {
-            Stage1Manager.OnChangeAudioState -= ChangeAudioState;
+            StageManager.OnChangeAudioState -= ChangeAudioState;
         }
 
         private void ChangeAudioState(AudioState state, int audioIndex)

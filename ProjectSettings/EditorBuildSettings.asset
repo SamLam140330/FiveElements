@@ -36,5 +36,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Ending3.unity
     guid: a3ae6e438d66bef4d98474fb769a4e1e
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 50b2d6afff4f29f4c8945b1b6deddaf7,
+      type: 2}
+    com.unity.localization.settings: {fileID: 11400000, guid: b71f865ff8997a14bb3312c1707ee841,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f06b4043775d6974c96ea67be67ddae5,
       type: 2}

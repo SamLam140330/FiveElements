@@ -7,14 +7,21 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
-	"last_search.DD5CDD96" = "Controll"
-	"OpenInspectorPreview.DD5CDD96" = "0"
-	"currentGroup.DD5CDD96" = "menu"
-	"last_search.DA949528" = ""
-	"OpenInspectorPreview.DA949528" = "0"
-	"currentGroup.DA949528" = "all"
+	"last_search.B655092D" = "st:c"
+	"OpenInspectorPreview.B655092D" = "0"
+	"currentGroup.B655092D" = "all"
 }
 providers = {
+	at = {
+		active = true
+		priority = 100
+		defaultAction = null
+	}
+	st = {
+		active = true
+		priority = 100
+		defaultAction = null
+	}
 	adb = {
 		active = false
 		priority = 2500
@@ -59,7 +66,6 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
-	"Controll"
 ]
 searchItemFavorites = [
 ]

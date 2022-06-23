@@ -6,13 +6,11 @@ namespace FiveElement.EndPoint
 {
     public abstract class EndPointManager : MonoBehaviour
     {
-        protected Stage1Manager Stage1Managers;
         protected ParticleSystem ParticleSystems;
         protected ParticleSystem.MainModule ParticleSystemMainModule;
 
-        private void Start()
+        private void Awake()
         {
-            Stage1Managers = FindObjectOfType<Stage1Manager>();
             ParticleSystems = GetComponent<ParticleSystem>();
             ParticleSystemMainModule = ParticleSystems.main;
         }
@@ -22,8 +20,8 @@ namespace FiveElement.EndPoint
             if (!other.gameObject.CompareTag("Player"))
             {
                 Destroy(other.gameObject);
-                Stage1Manager.FindElementNum += 1;
-                Stage1Manager.MakeSomeAudio(AudioState.Play, 1);
+                StageManager.FindElementNum += 1;
+                StageManager.MakeSomeAudio(AudioState.Play, 1);
             }
         }
     }

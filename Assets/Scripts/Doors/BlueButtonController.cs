@@ -8,15 +8,15 @@ namespace FiveElement.Doors
     {
         private Light2D _lighting;
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             _lighting = GetComponentInChildren<Light2D>();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.CompareTag("Player") && currentState == 0)
+            if (other.gameObject.CompareTag("Player") && doorState == 0)
             {
                 OnChangeDoorState(DoorColor.Blue);
             }
@@ -27,11 +27,11 @@ namespace FiveElement.Doors
             if (color == DoorColor.Blue)
             {
                 base.ChangeDoorState(color);
-                if (currentState == 0)
+                if (doorState == DoorState.Open)
                 {
                     _lighting.enabled = true;
                 }
-                else if (currentState == 1)
+                else if (doorState == DoorState.Close)
                 {
                     _lighting.enabled = false;
                 }

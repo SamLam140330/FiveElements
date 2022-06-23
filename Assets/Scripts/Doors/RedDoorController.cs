@@ -7,9 +7,9 @@ namespace FiveElement.Doors
     {
         private BoxCollider2D _boxCollider2D;
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             _boxCollider2D = GetComponent<BoxCollider2D>();
         }
 
@@ -18,11 +18,11 @@ namespace FiveElement.Doors
             if (color == DoorColor.Red)
             {
                 base.ChangeDoorState(color);
-                if (currentState == 0)
+                if (doorState == DoorState.Close)
                 {
                     _boxCollider2D.enabled = true;
                 }
-                else if (currentState == 1)
+                else if (doorState == DoorState.Open)
                 {
                     _boxCollider2D.enabled = false;
                 }

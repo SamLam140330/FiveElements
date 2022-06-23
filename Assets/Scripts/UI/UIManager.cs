@@ -10,7 +10,6 @@ namespace FiveElement.UI
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI timeTxt;
-        [SerializeField] private GameObject pauseBtn;
         [SerializeField] private GameObject tipsUI;
         [SerializeField] private GameObject gameUI;
         [SerializeField] private GameObject pauseUI;
@@ -18,7 +17,7 @@ namespace FiveElement.UI
         [SerializeField] private Image[] emptyElements;
         [SerializeField] private Sprite[] elements;
 
-        private void Start()
+        private void Awake()
         {
             tipsUI.SetActive(true);
             gameUI.SetActive(false);
@@ -28,112 +27,110 @@ namespace FiveElement.UI
 
         private void Update()
         {
-            CheckEscBtn();
-            ChangeTimerTxt();
+            if (StageManager.FindElementNum < 5 && StageManager.IsPause == false)
+            {
+                ChangeTimerTxt();
+            }
         }
 
         private void OnEnable()
         {
-            Stage1Manager.OnCompleteElement += ChangeCompleteElementState;
+            Stage1Controller.OnCompleteElement += ChangeCompleteElementState;
+            StageManager.OnPauseTheGame += ChangeGamePauseState;
         }
 
         private void OnDisable()
         {
-            Stage1Manager.OnCompleteElement -= ChangeCompleteElementState;
+            Stage1Controller.OnCompleteElement -= ChangeCompleteElementState;
+            StageManager.OnPauseTheGame -= ChangeGamePauseState;
         }
 
         private void ChangeCompleteElementState(string color)
         {
             if (color == "Gold")
             {
-                emptyElements[Stage1Manager.FindElementNum - 1].sprite = elements[0];
+                emptyElements[StageManager.FindElementNum - 1].sprite = elements[0];
             }
             else if (color == "Wood")
             {
-                emptyElements[Stage1Manager.FindElementNum - 1].sprite = elements[1];
+                emptyElements[StageManager.FindElementNum - 1].sprite = elements[1];
             }
             else if (color == "Dust")
             {
-                emptyElements[Stage1Manager.FindElementNum - 1].sprite = elements[2];
+                emptyElements[StageManager.FindElementNum - 1].sprite = elements[2];
             }
             else if (color == "Water")
             {
-                emptyElements[Stage1Manager.FindElementNum - 1].sprite = elements[3];
+                emptyElements[StageManager.FindElementNum - 1].sprite = elements[3];
             }
             else if (color == "Fire")
             {
-                emptyElements[Stage1Manager.FindElementNum - 1].sprite = elements[4];
+                emptyElements[StageManager.FindElementNum - 1].sprite = elements[4];
             }
-            if (Stage1Manager.FindElementNum >= 5)
+            if (StageManager.FindElementNum >= 5)
             {
                 ChangeWinUi();
             }
         }
 
-        private void CheckEscBtn()
+        private void ChangeGamePauseState(bool isPause)
         {
-            if (Stage1Manager.FindElementNum < 5 && Stage1Manager.TimeLeft > 0)
+            if (isPause == false)
             {
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    if (Stage1Manager.IsPause == false)
-                    {
-                        OnPauseClicked();
-                    }
-                    else
-                    {
-                        OnResumeClicked();
-                    }
-                }
+                OnPauseClicked();
+            }
+            else
+            {
+                OnResumeClicked();
             }
         }
 
         private void ChangeTimerTxt()
         {
-            if (Stage1Manager.FindElementNum < 5)
+            timeTxt.text = "Time Remain: " + (int)StageManager.TimeLeft + "s";
+            if (StageManager.TimeLeft <= 180f)
             {
-                timeTxt.text = "Time Remain: " + (int)Stage1Manager.TimeLeft + "s";
-                if (Stage1Manager.TimeLeft <= 180f)
-                {
-                    timeTxt.color = Color.yellow;
-                }
-                if (Stage1Manager.TimeLeft <= 60f)
-                {
-                    timeTxt.color = Color.red;
-                }
+                timeTxt.color = Color.yellow;
+            }
+            if (StageManager.TimeLeft <= 60f)
+            {
+                timeTxt.color = Color.red;
             }
         }
 
         private void ChangeWinUi()
         {
             completeUI.SetActive(true);
-            pauseBtn.SetActive(false);
         }
 
         public void OnConfirmBtnClicked()
         {
-            Stage1Manager.IsPause = false;
+            StageManager.IsTipsShow = true;
+            StageManager.IsPause = false;
             tipsUI.SetActive(false);
             gameUI.SetActive(true);
+            Cursor.lockState = CursorLockMode.Locked;
             Time.timeScale = 1f;
         }
 
         public void OnPauseClicked()
         {
-            Stage1Manager.IsPause = true;
+            StageManager.IsPause = true;
             gameUI.SetActive(false);
             pauseUI.SetActive(true);
-            Stage1Manager.MakeSomeAudio(AudioState.Pause, 0);
-            Stage1Manager.MakeSomeAudio(AudioState.Stop, 2);
+            Cursor.lockState = CursorLockMode.None;
+            StageManager.MakeSomeAudio(AudioState.Pause, 0);
+            StageManager.MakeSomeAudio(AudioState.Stop, 2);
             Time.timeScale = 0f;
         }
 
         public void OnResumeClicked()
         {
-            Stage1Manager.IsPause = false;
+            StageManager.IsPause = false;
             gameUI.SetActive(true);
             pauseUI.SetActive(false);
-            Stage1Manager.MakeSomeAudio(AudioState.Play, 0);
+            Cursor.lockState = CursorLockMode.Locked;
+            StageManager.MakeSomeAudio(AudioState.Play, 0);
             Time.timeScale = 1f;
         }
 

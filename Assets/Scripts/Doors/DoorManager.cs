@@ -5,9 +5,11 @@ namespace FiveElement.Doors
 {
     public abstract class DoorManager : MonoBehaviour
     {
-        [SerializeField] protected int currentState;
-        [SerializeField] private Sprite[] doorState;
+        [SerializeField] private DoorColor doorColor;
+        [SerializeField] protected DoorState doorState;
+        [SerializeField] private Sprite[] doorImage;
         private SpriteRenderer _spriteRenderer;
+
         protected delegate void ChangeDoor(DoorColor color);
         protected static event ChangeDoor OnChangeDoor;
 
@@ -16,7 +18,7 @@ namespace FiveElement.Doors
             OnChangeDoor?.Invoke(color);
         }
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
@@ -33,15 +35,15 @@ namespace FiveElement.Doors
 
         protected virtual void ChangeDoorState(DoorColor color)
         {
-            if (currentState == 0)
+            if (doorState == DoorState.Close)
             {
-                _spriteRenderer.sprite = doorState[1];
-                currentState = 1;
+                _spriteRenderer.sprite = doorImage[1];
+                doorState = DoorState.Open;
             }
-            else if (currentState == 1)
+            else if (doorState == DoorState.Open)
             {
-                _spriteRenderer.sprite = doorState[0];
-                currentState = 0;
+                _spriteRenderer.sprite = doorImage[0];
+                doorState = DoorState.Close;
             }
         }
     }
