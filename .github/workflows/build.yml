@@ -1,0 +1,161 @@
+name: Linting, Testing and Building
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+
+jobs:
+  dotnet-format:
+    name: Format the code
+    runs-on: windows-latest
+    steps:
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v2.1.0
+        with:
+          dotnet-version: '6.0.x'
+          
+      - name: Install dotnet-format
+        run: dotnet tool install -g dotnet-format
+        
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Restore dependencies
+        run: dotnet restore FiveElement.csproj
+       
+      - name: Run dotnet format
+        run: dotnet format FiveElement.csproj --verify-no-changes --severity warn --verbosity diagnostic
+
+  check-license:
+    name: Check for the Unity license
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail - No license found
+        if: ${{ env.UNITY_SERIAL == '' }}
+        run: exit 1
+
+  test-the-code:
+    needs: [check-license, dotnet-format]
+    name: Test the code
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - playmode
+          - editmode
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          
+      - name: Cache the repository
+        uses: actions/cache@v3.0.4
+        with:
+          path: Library
+          key: Library-Main
+          restore-keys: |
+            Library-Main-
+            Library-
+            
+      - name: Test the code
+        uses: game-ci/unity-test-runner@v2.0.3
+        id: tests
+        with:
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: ${{ matrix.testMode }} Test Results
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+my.assembly.*'
+          
+      - name: Expose as artifact
+        uses: actions/upload-artifact@v3.1.0
+        if: always()
+        with:
+          name: Test results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+          
+      - name: Expose as coverage
+        uses: actions/upload-artifact@v3.1.0
+        if: always()
+        with:
+          name: Coverage results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.coveragePath }}
+
+  build-the-game-x64:
+    needs: test-the-code
+    name: Build for Windows x64
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+          
+      - name: Cache the repository
+        uses: actions/cache@v3.0.4
+        with:
+          path: Library
+          key: Library-Main-StandaloneWindows64
+          restore-keys: |
+            Library-Main-StandaloneWindows64-
+            Library-Main-
+            Library-
+            
+      - name: Build the game
+        uses: game-ci/unity-builder@v2.0.4
+        with:
+          targetPlatform: StandaloneWindows64
+          
+      - name: Expose as artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: Build-StandaloneWindows64
+          path: build/StandaloneWindows64
+
+  build-the-game-x86:
+    needs: build-the-game-x64
+    name: Build for Windows x86
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+          
+      - name: Cache the repository
+        uses: actions/cache@v3.0.4
+        with:
+          path: Library
+          key: Library-Main-StandaloneWindows
+          restore-keys: |
+            Library-Main-StandaloneWindows-
+            Library-Main-
+            Library-
+            
+      - name: Build the game
+        uses: game-ci/unity-builder@v2.0.4
+        with:
+          targetPlatform: StandaloneWindows
+          
+      - name: Expose as artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: Build-StandaloneWindows
+          path: build/StandaloneWindows

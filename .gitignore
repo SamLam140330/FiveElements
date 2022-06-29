@@ -29,6 +29,7 @@
 ExportedObj/
 .consulo/
 *.csproj
+!FiveElement.csproj
 *.unityproj
 *.sln
 *.suo
