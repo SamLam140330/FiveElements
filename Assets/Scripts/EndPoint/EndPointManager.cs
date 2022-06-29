@@ -1,5 +1,5 @@
 using FiveElement.Id;
-using FiveElement.Stage1;
+using FiveElement.GameManager;
 using UnityEngine;
 
 namespace FiveElement.EndPoint

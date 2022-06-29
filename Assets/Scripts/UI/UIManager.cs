@@ -1,5 +1,5 @@
 using FiveElement.Id;
-using FiveElement.Stage1;
+using FiveElement.GameManager;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,15 +14,36 @@ namespace FiveElement.UI
         [SerializeField] private GameObject gameUI;
         [SerializeField] private GameObject pauseUI;
         [SerializeField] private GameObject completeUI;
+        [SerializeField] private GameObject fadeInOutUI;
+        [SerializeField] private GameObject endingUI;
+        [SerializeField] private Image endingImage;
+        [SerializeField] private Sprite[] images;
         [SerializeField] private Image[] emptyElements;
         [SerializeField] private Sprite[] elements;
+        [SerializeField] private Animator[] animator;
+        private readonly int _opening = Animator.StringToHash("Opening");
 
-        private void Awake()
+        private void Start()
         {
-            tipsUI.SetActive(true);
-            gameUI.SetActive(false);
-            pauseUI.SetActive(false);
-            completeUI.SetActive(false);
+            if (StageManager.SceneStages == SceneStage.Opening)
+            {
+                fadeInOutUI.SetActive(true);
+                animator[0].SetTrigger(_opening);
+            }
+            else if (StageManager.SceneStages == SceneStage.Ending1)
+            {
+                endingImage.sprite = images[0];
+                endingUI.SetActive(true);
+            }
+            else if (StageManager.SceneStages is SceneStage.Stage1 or SceneStage.Stage2 or SceneStage.Stage3)
+            {
+                tipsUI.SetActive(true);
+            }
+            else if (StageManager.SceneStages == SceneStage.Ending2)
+            {
+                endingImage.sprite = images[1];
+                endingUI.SetActive(true);
+            }
         }
 
         private void Update()
@@ -103,6 +124,30 @@ namespace FiveElement.UI
             completeUI.SetActive(true);
         }
 
+        public void OnFadeInOutYesBtnClicked()
+        {
+            if (StageManager.SceneStages == SceneStage.Opening)
+            {
+                SceneManager.LoadScene(SceneStage.Stage1.ToString());
+            }
+            else
+            {
+                SceneManager.LoadScene(StageManager.LossStage.ToString());
+            }
+        }
+
+        public void OnFadeInOutNoBtnClicked()
+        {
+            if (StageManager.SceneStages == SceneStage.Opening)
+            {
+                SceneManager.LoadScene(SceneStage.Ending1.ToString());
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneStage.MainMenu.ToString());
+            }
+        }
+
         public void OnConfirmBtnClicked()
         {
             StageManager.IsTipsShow = true;
@@ -136,15 +181,15 @@ namespace FiveElement.UI
 
         public void OnBackToMenuClicked()
         {
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene(SceneStage.MainMenu.ToString());
         }
 
         public void OnRestartClicked()
         {
-            SceneManager.LoadScene("Stage1");
+            SceneManager.LoadScene(StageManager.SceneStages.ToString());
         }
 
-        public void OnQuitGameClicked()
+        public void OnQuitGameClicked() //may remove
         {
             Application.Quit();
         }

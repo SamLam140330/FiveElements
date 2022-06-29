@@ -3,7 +3,7 @@ using FiveElement.Id;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace FiveElement.Stage1
+namespace FiveElement.GameManager
 {
     public abstract class StageManager : MonoBehaviour
     {
@@ -11,6 +11,8 @@ namespace FiveElement.Stage1
         public static float TimeLeft;
         public static bool IsPause;
         public static bool IsTipsShow;
+        public static SceneStage SceneStages;
+        public static SceneStage LossStage;
         private static StageManager _stageManager;
 
         public delegate void PlayAudio(AudioState state, int audioIndex);
@@ -28,20 +30,13 @@ namespace FiveElement.Stage1
             OnPauseTheGame?.Invoke(isPause);
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
-            //PlayerPrefs.SetInt("Stage", 1);
-            PlayerPrefs.Save();
-            _stageManager = GetComponent<StageManager>();
-            FindElementNum = 0;
-            TimeLeft = 400f;
-            IsTipsShow = false;
-            IsPause = true;
             Cursor.lockState = CursorLockMode.None;
-            Time.timeScale = 0f;
+            _stageManager = GetComponent<StageManager>();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (IsPause == false && TimeLeft > 0 && FindElementNum < 5)
             {
@@ -54,7 +49,11 @@ namespace FiveElement.Stage1
             TimeLeft -= Time.deltaTime;
             if (TimeLeft <= 0f)
             {
-                SceneManager.LoadScene("Ending2");
+                if (SceneStages == SceneStage.Stage1)
+                {
+                    LossStage = SceneStage.Stage1;
+                }
+                SceneManager.LoadScene(SceneStage.Ending2.ToString());
             }
         }
 
@@ -63,15 +62,25 @@ namespace FiveElement.Stage1
             if (FindElementNum >= 5)
             {
                 IsPause = true;
-                _stageManager.StartCoroutine(NextLevel());
+                if (SceneStages == SceneStage.Stage1)
+                {
+                    _stageManager.StartCoroutine(NextLevel(SceneStage.Stage2));
+                }
+                else if (SceneStages == SceneStage.Stage2)
+                {
+                    _stageManager.StartCoroutine(NextLevel(SceneStage.Stage3));
+                }
+                else if (SceneStages == SceneStage.Stage2)
+                {
+                    _stageManager.StartCoroutine(NextLevel(SceneStage.Ending3));
+                }
             }
         }
 
-        private static IEnumerator NextLevel()
+        private static IEnumerator NextLevel(SceneStage stage)
         {
             yield return new WaitForSeconds(5f);
-            //SceneManager.LoadScene("Stage2");
-            Application.Quit();
+            SceneManager.LoadScene(stage.ToString());
         }
     }
 }

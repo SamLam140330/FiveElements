@@ -35,6 +35,14 @@ MonoBehaviour:
     m_Key: CompleteTxt
     m_Metadata:
       m_Items: []
+  - m_Id: 1113760839565312
+    m_Key: RetryBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1113844478181376
+    m_Key: GiveupBtn
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
